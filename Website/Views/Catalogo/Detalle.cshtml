@@ -1,0 +1,13 @@
+﻿@model TuProyecto.Models.Producto
+
+@{
+    ViewData["Title"] = "Detalle";
+}
+
+<div class="card shadow p-3">
+    <img src="@Model.ImagenUrl" class="card-img-top mb-3" alt="@Model.Nombre" style="max-width:300px;" />
+    <h2>@Model.Nombre</h2>
+    <p>@Model.Descripcion</p>
+    <h4 class="text-success">Precio: $@Model.Precio</h4>
+    <a href="@Url.Action("Index", "Catalogo")" class="btn btn-secondary mt-3">Volver al catálogo</a>
+</div>

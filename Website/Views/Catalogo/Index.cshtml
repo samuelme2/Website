@@ -1,0 +1,35 @@
+﻿@model List<TuProyecto.Models.Producto>
+
+@{
+    ViewData["Title"] = "Catálogo";
+}
+
+<h2>Catálogo de Productos</h2>
+
+<form method="get" asp-action="Index">
+    <label for="categoria">Filtrar por categoría:</label>
+    <select id="categoria" name="categoria" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        @foreach (var cat in ViewBag.Categorias)
+        {
+            /**/
+        }
+    </select>
+</form>
+
+<div class="row mt-4">
+    @foreach (var producto in Model)
+    {
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre" />
+                <div class="card-body">
+                    <h5 class="card-title">@producto.Nombre</h5>
+                    <p class="card-text">@producto.Descripcion</p>
+                    <p class="text-success">Precio: $@producto.Precio</p>
+                    <a href="@Url.Action("Detalle", "Catalogo", new { id = producto.Id })" class="btn btn-primary">Ver Detalles</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
