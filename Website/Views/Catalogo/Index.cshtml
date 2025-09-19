@@ -2,34 +2,161 @@
 
 @{
     ViewData["Title"] = "Catálogo";
+    var categorias = ViewBag.Categorias as List<string>;
+    var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as string;
 }
 
-<h2>Catálogo de Productos</h2>
+<style>
+    /* Estilos base del catálogo (mantienen lo anterior o puedes ajustarlos a tu gusto) */
+    :root {
+        --primary-color: #007bff;
+        --secondary-color: #6c757d;
+        --success-color: #28a745;
+        --text-color: #343a40;
+        --bg-light: #f8f9fa;
+    }
 
-<form method="get" asp-action="Index">
-    <label for="categoria">Filtrar por categoría:</label>
-    <select id="categoria" name="categoria" onchange="this.form.submit()">
-        <option value="">Todos</option>
-        @foreach (var cat in ViewBag.Categorias)
+    body {
+        background-color: var(--bg-light);
+    }
+
+    .catalogo-titulo {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        color: var(--text-color);
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    .catalogo-titulo::after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 4px;
+        background-color: var(--primary-color);
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+    }
+
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-img-top {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        filter: grayscale(0.2) contrast(1.1);
+        transition: filter 0.3s ease;
+    }
+
+    .card:hover .card-img-top {
+        filter: grayscale(0) contrast(1);
+    }
+
+    .card-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .producto-nombre {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .producto-precio {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--success-color);
+    }
+
+    .btn-detalles {
+        width: 100%;
+        border-radius: 8px;
+        font-weight: 600;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #fff;
+    }
+
+    .btn-detalles:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    /* Estilos para el nuevo filtro horizontal */
+    .filtro-horizontal {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap; /* Para que los botones se envuelvan en pantallas pequeñas */
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+
+    .filtro-btn {
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        color: var(--text-color);
+        background-color: #e9ecef;
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        font-weight: 500;
+        border: 1px solid transparent;
+    }
+
+    .filtro-btn:hover {
+        background-color: var(--secondary-color);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .filtro-btn.active {
+        background-color: var(--primary-color);
+        color: #fff;
+        font-weight: 600;
+        transform: translateY(-2px);
+        border: 1px solid var(--primary-color);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-5 catalogo-titulo">🛍️ Catálogo de Productos</h2>
+
+    <div class="filtro-horizontal">
+        <a href="@Url.Action("Index", new { categoria = "" })" class="filtro-btn @(string.IsNullOrEmpty(categoriaSeleccionada) ? "active" : "")">Todas</a>
+        @foreach (var cat in categorias)
         {
-            /**/
+            <a href="@Url.Action("Index", new { categoria = cat })" class="filtro-btn @(cat == categoriaSeleccionada ? "active" : "")">@cat</a>
         }
-    </select>
-</form>
+    </div>
 
-<div class="row mt-4">
-    @foreach (var producto in Model)
-    {
-        <div class="col-md-4">
-            <div class="card shadow mb-4">
-                <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre" />
-                <div class="card-body">
-                    <h5 class="card-title">@producto.Nombre</h5>
-                    <p class="card-text">@producto.Descripcion</p>
-                    <p class="text-success">Precio: $@producto.Precio</p>
-                    <a href="@Url.Action("Detalle", "Catalogo", new { id = producto.Id })" class="btn btn-primary">Ver Detalles</a>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var producto in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre" style="height: 250px; object-fit: cover;">
+                    <div class="card-body">
+                        <div>
+                            <h5 class="producto-nombre">@producto.Nombre</h5>
+                            <p class="producto-precio">@string.Format("{0:C}", producto.Precio)</p>
+                        </div>
+                        <a href="@Url.Action("Detalle", "Catalogo", new { id = producto.Id })" class="btn btn-detalles mt-3">
+                            Ver Detalles ✨
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>

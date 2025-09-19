@@ -4,10 +4,29 @@
     ViewData["Title"] = "Detalle";
 }
 
-<div class="card shadow p-3">
-    <img src="@Model.ImagenUrl" class="card-img-top mb-3" alt="@Model.Nombre" style="max-width:300px;" />
-    <h2>@Model.Nombre</h2>
-    <p>@Model.Descripcion</p>
-    <h4 class="text-success">Precio: $@Model.Precio</h4>
-    <a href="@Url.Action("Index", "Catalogo")" class="btn btn-secondary mt-3">Volver al catálogo</a>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Imagen del producto -->
+        <div class="col-md-6 text-center">
+            <div class="card shadow-sm border-0 p-3">
+                <img src="@Model.ImagenUrl" class="img-fluid rounded" alt="@Model.Nombre" style="max-height:400px; object-fit:contain;" />
+            </div>
+        </div>
+
+        <!-- Información del producto -->
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h2 class="mb-3">@Model.Nombre</h2>
+            <p class="text-muted fs-5">@Model.Descripcion</p>
+            <h3 class="text-success fw-bold mb-4">Precio: $@Model.Precio</h3>
+
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("Index", "Catalogo")" class="btn btn-outline-secondary">
+                    ← Volver al catálogo
+                </a>
+                <button class="btn btn-primary">
+                    🛒 Agregar al carrito
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
