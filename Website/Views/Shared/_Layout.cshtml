@@ -10,29 +10,51 @@
 
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="~/css/erotico.css" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1; /* Empuja el footer hacia abajo */
+        }
+
+        .logo {
+            height: 100px;
+            width: auto;
+            position: relative;
+        }
+    </style>
 </head>
 <body>
     <!-- Fondo animado -->
     <div class="fondo-animado"></div>
 
-    @* Variables reutilizables para construir los links correctamente *@
+    @* Variables para usar en los links *@
     @{
-        // raíz de la app ("/")
         var appRoot = Url.Content("~");
         var currentTitle = ViewData["Title"]?.ToString();
         var categorias = ViewBag.Categorias as List<string>;
         var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as string;
     }
 
+    <!-- Header con Navbar -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-warning">
             <div class="container-fluid">
+                <!-- Logo -->
                 <a class="navbar-brand fw-bold text-warning" href="@appRoot">
-                    🔥 Tienda Erótica 🔥
+                    <img src="~/images/logo.png" class="logo" alt="Logo Tienda Erótica" />
                 </a>
 
-                @* Filtros de categorías directamente en el header, al lado del logo.
-                   Construimos manualmente la URL usando la raíz ("~") para forzar "/" *@
+                <!-- Filtros de categorías -->
                 @if (categorias != null && currentTitle == "Catálogo")
                 {
                     <div class="d-flex flex-wrap ms-3 align-items-center">
@@ -51,10 +73,12 @@
                     </div>
                 }
 
+                <!-- Botón responsive -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
+                <!-- Menú -->
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
@@ -77,12 +101,12 @@
         @RenderBody()
     </main>
 
-    <!-- Pie de página -->
-    <footer class="text-center py-3 mt-5 bg-dark border-top border-warning">
+    <!-- Footer -->
+    <footer class="text-center py-3 bg-dark border-top border-warning">
         <p class="mb-0 text-warning">&copy; @DateTime.Now.Year - Tienda Erótica</p>
     </footer>
 
-    <!-- Botón flotante de WhatsApp con tu imagen -->
+    <!-- Botón flotante WhatsApp -->
     <a href="https://wa.me/573248416899" class="whatsapp-float" target="_blank" rel="noopener">
         <img src="@Url.Content("~/images/whatsapp.jpg")" alt="WhatsApp" />
     </a>
@@ -92,4 +116,3 @@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
-
