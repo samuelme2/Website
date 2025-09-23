@@ -15,33 +15,46 @@
     <!-- Fondo animado -->
     <div class="fondo-animado"></div>
 
-<<<<<<< HEAD
-    <!-- Encabezado -->
+    @* Variables reutilizables para construir los links correctamente *@
+    @{
+        // raíz de la app ("/")
+        var appRoot = Url.Content("~");
+        var currentTitle = ViewData["Title"]?.ToString();
+        var categorias = ViewBag.Categorias as List<string>;
+        var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as string;
+    }
+
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-warning">
             <div class="container-fluid">
-                <!-- Logo -->
-                <a class="navbar-brand fw-bold text-warning" href="@Url.Action("Index", "Productos")">
+                <a class="navbar-brand fw-bold text-warning" href="@appRoot">
                     🔥 Tienda Erótica 🔥
                 </a>
 
-                <!-- Botón hamburguesa -->
+                @* Filtros de categorías directamente en el header, al lado del logo.
+                   Construimos manualmente la URL usando la raíz ("~") para forzar "/" *@
+                @if (categorias != null && currentTitle == "Catálogo")
+                {
+                    <div class="d-flex flex-wrap ms-3 align-items-center">
+                        <a href="@($"{appRoot}?categoria=")"
+                           class="btn btn-sm me-2 @(string.IsNullOrEmpty(categoriaSeleccionada) ? "btn-warning fw-bold" : "btn-outline-warning")">
+                            Todas
+                        </a>
+
+                        @foreach (var cat in categorias)
+                        {
+                            <a href="@($"{appRoot}?categoria={System.Net.WebUtility.UrlEncode(cat)}")"
+                               class="btn btn-sm me-2 @(cat == categoriaSeleccionada ? "btn-warning fw-bold" : "btn-outline-warning")">
+                                @cat
+                            </a>
+                        }
+                    </div>
+                }
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Menú -->
-=======
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-warning">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-warning" href="@Url.Action("Index", "Productos")">
-                    🔥 Tienda Erótica 🔥
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
->>>>>>> parent of 713e8d9 (Correccion ubicacion filtros en header)
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
