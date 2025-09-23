@@ -9,6 +9,14 @@
 <div class="container mt-5">
     <h2 class="text-center mb-5 catalogo-titulo">🛍️ Catálogo de Productos</h2>
 
+    <div class="filtro-horizontal">
+        <a href="@Url.Action("Index", new { categoria = "" })" class="filtro-btn @(string.IsNullOrEmpty(categoriaSeleccionada) ? "active" : "")">Todas</a>
+        @foreach (var cat in categorias)
+        {
+            <a href="@Url.Action("Index", new { categoria = cat })" class="filtro-btn @(cat == categoriaSeleccionada ? "active" : "")">@cat</a>
+        }
+    </div>
+
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var producto in Model)
         {
