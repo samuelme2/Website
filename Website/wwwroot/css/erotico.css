@@ -34,18 +34,22 @@ body {
     filter: saturate(0.95) contrast(0.95);
 }
 
-.site-bg::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 20% 30%, rgba(255,209,102,0.12), transparent 20%),
-                radial-gradient(circle at 80% 70%, rgba(155,93,229,0.08), transparent 20%);
-    animation: moveGlow 20s infinite alternate;
-}
+    .site-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 20% 30%, rgba(255,209,102,0.12), transparent 20%), radial-gradient(circle at 80% 70%, rgba(155,93,229,0.08), transparent 20%);
+        animation: moveGlow 20s infinite alternate;
+    }
 
 @keyframes moveGlow {
-    from { transform: translateY(0) }
-    to   { transform: translateY(-10px) }
+    from {
+        transform: translateY(0)
+    }
+
+    to {
+        transform: translateY(-10px)
+    }
 }
 
 /* ==================== Header y Navegación ==================== */
@@ -80,25 +84,25 @@ header {
     transition: color 0.3s ease;
 }
 
-.navbar-nav .nav-link::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    width: 0%;
-    height: 2px;
-    background: var(--accent-2);
-    transition: width 0.35s ease-in-out;
-}
+    .navbar-nav .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -4px;
+        width: 0%;
+        height: 2px;
+        background: var(--accent-2);
+        transition: width 0.35s ease-in-out;
+    }
 
-.navbar-nav .nav-link:hover::after,
-.navbar-nav .nav-link.active::after {
-    width: 100%;
-}
+    .navbar-nav .nav-link:hover::after,
+    .navbar-nav .nav-link.active::after {
+        width: 100%;
+    }
 
-.navbar-nav .nav-link:hover {
-    color: var(--accent) !important;
-}
+    .navbar-nav .nav-link:hover {
+        color: var(--accent) !important;
+    }
 
 /* ==================== Hero Section ==================== */
 .hero {
@@ -117,10 +121,10 @@ header {
     transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
 }
 
-.producto-card:hover {
-    transform: translateY(-8px) scale(1.01);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent);
-}
+    .producto-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent);
+    }
 
 .producto-img {
     height: 220px;
@@ -169,10 +173,10 @@ header {
     color: rgba(255,255,255,0.18);
 }
 
-.producto-rating .star.filled {
-    color: var(--accent);
-    text-shadow: 0 0 8px rgba(255,209,102,0.5);
-}
+    .producto-rating .star.filled {
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(255,209,102,0.5);
+    }
 
 /* Botones */
 .btn-warning {
@@ -191,25 +195,67 @@ header {
     font-size: 0.85rem;
 }
 
-/* ==================== WhatsApp Flotante ==================== */
+/* ==================== Botón flotante WhatsApp ==================== */
 .whatsapp-float {
     position: fixed;
-    right: 18px;
-    bottom: 18px;
-    width: 72px;
-    height: 72px;
+    bottom: 20px;
+    right: 20px;
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
-    overflow: hidden; /* recorta el logo dentro del círculo */
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 999;
-    overflow: visible; /* 👈 muy importante: permite que el mensaje salga fuera del círculo */
+    text-decoration: none;
 }
 
     .whatsapp-float img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* la imagen llena el círculo */
+        width: 75%;
+        height: auto;
+        border-radius: 50%;
     }
+
+    /* Mensaje emergente */
+    .whatsapp-float .whatsapp-msg {
+        position: absolute;
+        right: 100%; /* aparece a la izquierda */
+        top: 50%;
+        transform: translateY(-50%) translateX(10px);
+        background: #25D366;
+        color: #fff;
+        font-size: 1rem;
+        padding: 10px 16px;
+        border-radius: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        margin-right: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 15px rgba(37, 211, 102, 0.5);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        font-weight: 600;
+    }
+
+        /* Flechita apuntando al botón */
+        .whatsapp-float .whatsapp-msg::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent transparent #25D366;
+        }
+
+    /* Mostrar mensaje al pasar el cursor */
+    .whatsapp-float:hover .whatsapp-msg {
+        opacity: 1;
+        transform: translateY(-50%) translateX(-5px);
+    }
+
 
 /* ==================== Footer ==================== */
 footer {
@@ -218,8 +264,13 @@ footer {
 
 /* ==================== Responsive ==================== */
 @media (max-width:768px) {
-    .producto-img { height: 180px; }
-    .logo-small { height: 42px; }
+    .producto-img {
+        height: 180px;
+    }
+
+    .logo-small {
+        height: 42px;
+    }
 }
 
 /* ==================== Accesibilidad y Animaciones ==================== */
@@ -229,7 +280,15 @@ a:focus, button:focus, input:focus {
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
