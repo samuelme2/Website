@@ -4,63 +4,42 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Tienda Erótica</title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+
+    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="~/css/erotico.css" />
 </head>
 <body>
     <!-- Fondo animado -->
     <div class="fondo-animado"></div>
 
-    @* Variables reutilizables para construir los links correctamente *@
-    @{
-        // raíz de la app ("/")
-        var appRoot = Url.Content("~");
-        var currentTitle = ViewData["Title"]?.ToString();
-        var categorias = ViewBag.Categorias as List<string>;
-        var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as string;
-    }
-
+    <!-- Encabezado -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-warning">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-warning" href="@appRoot">
+                <!-- Logo -->
+                <a class="navbar-brand fw-bold text-warning" href="@Url.Action("Index", "Productos")">
                     🔥 Tienda Erótica 🔥
                 </a>
 
-                @* Filtros de categorías directamente en el header, al lado del logo.
-                   Construimos manualmente la URL usando la raíz ("~") para forzar "/" *@
-                @if (categorias != null && currentTitle == "Catálogo")
-                {
-                    <div class="d-flex flex-wrap ms-3 align-items-center">
-                        <a href="@($"{appRoot}?categoria=")"
-                           class="btn btn-sm me-2 @(string.IsNullOrEmpty(categoriaSeleccionada) ? "btn-warning fw-bold" : "btn-outline-warning")">
-                            Todas
-                        </a>
-
-                        @foreach (var cat in categorias)
-                        {
-                            <a href="@($"{appRoot}?categoria={System.Net.WebUtility.UrlEncode(cat)}")"
-                               class="btn btn-sm me-2 @(cat == categoriaSeleccionada ? "btn-warning fw-bold" : "btn-outline-warning")">
-                                @cat
-                            </a>
-                        }
-                    </div>
-                }
-
+                <!-- Botón hamburguesa -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
+                <!-- Menú -->
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="@appRoot">Catálogo</a>
+                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Index", "Productos")">Catálogo</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Privacy", "Home")">Privacidad</a>
+                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Privacy", "Catalogo")">Privacidad</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Contact", "Home")">Contacto</a>
+                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Contact", "Catalogo")">Contacto</a>
                         </li>
                     </ul>
                 </div>
@@ -68,14 +47,22 @@
         </nav>
     </header>
 
+    <!-- Contenido principal -->
     <main class="container mt-4 text-light">
         @RenderBody()
     </main>
 
+    <!-- Pie de página -->
     <footer class="text-center py-3 mt-5 bg-dark border-top border-warning">
         <p class="mb-0 text-warning">&copy; @DateTime.Now.Year - Tienda Erótica</p>
     </footer>
 
+    <!-- Botón flotante de WhatsApp con tu imagen -->
+    <a href="https://wa.me/573001112233" class="whatsapp-float" target="_blank" rel="noopener">
+        <img src="@Url.Content("~/images/whatsapp.jpg")" alt="WhatsApp" />
+    </a>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>

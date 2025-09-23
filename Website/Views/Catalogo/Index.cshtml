@@ -18,7 +18,7 @@
                     <div class="card-body">
                         <div>
                             <h5 class="producto-nombre">@producto.Nombre</h5>
-                            <p class="producto-precio">@string.Format("{0:C}", producto.Precio)</p>
+                            <p class="producto-precio">@string.Format("{0:C0}", producto.Precio)</p>
                         </div>
                         <a href="@Url.Action("Detalle", "Catalogo", new { id = producto.Id })" class="btn btn-detalles mt-3">
                             Ver Detalles ✨
