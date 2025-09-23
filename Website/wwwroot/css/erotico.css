@@ -199,16 +199,17 @@ header {
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    overflow: hidden; /* recorta el logo dentro del círculo */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 999;
+    overflow: visible; /* 👈 muy importante: permite que el mensaje salga fuera del círculo */
 }
 
-.whatsapp-float img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+    .whatsapp-float img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* la imagen llena el círculo */
+    }
 
 /* ==================== Footer ==================== */
 footer {
