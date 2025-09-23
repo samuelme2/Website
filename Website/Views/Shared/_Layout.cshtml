@@ -2,93 +2,99 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Tienda Erótica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - SensualShop</title>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Estilos personalizados -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/css/erotico.css" />
 
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
+        header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1030;
+            transition: transform 0.3s ease-in-out;
         }
 
-        body {
-            display: flex;
-            flex-direction: column;
+        .navbar-hidden {
+            transform: translateY(-100%);
         }
 
+        /* Solución para el contenido */
         main {
-            flex: 1; /* Empuja el footer hacia abajo */
+            padding-top: 105px; /* Ajusta este valor según la altura real de tu navbar */
         }
 
-        .logo {
-            height: 100px;
-            width: auto;
-            position: relative;
+        /* Ajuste para dispositivos móviles */
+        @@media (max-width: 768px) {
+            main {
+                padding-top: 95px;
+            }
         }
     </style>
+
+    <meta name="description" content="SensualShop - Tienda online de productos íntimos, juguetes y bienestar sexual. Envío discreto y atención personalizada." />
 </head>
 <body>
-    <!-- Fondo animado -->
-    <div class="fondo-animado"></div>
+    <div class="site-bg"></div>
 
-    @* Variables para usar en los links *@
     @{
         var appRoot = Url.Content("~");
-        var currentTitle = ViewData["Title"]?.ToString();
         var categorias = ViewBag.Categorias as List<string>;
         var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as string;
     }
 
-    <!-- Header con Navbar -->
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-warning">
-            <div class="container-fluid">
-                <!-- Logo -->
-                <a class="navbar-brand fw-bold text-warning" href="@appRoot">
-                    <img src="~/images/logo.png" class="logo" alt="Logo Tienda Erótica" />
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="@appRoot">
+                    <img src="~/images/logo.png" alt="SensualShop" class="logo-small" />
+                    <span class="brand-title">SensualShop</span>
                 </a>
 
-                <!-- Filtros de categorías -->
-                @if (categorias != null && currentTitle == "Catálogo")
-                {
-                    <div class="d-flex flex-wrap ms-3 align-items-center">
-                        <a href="@($"{appRoot}?categoria=")"
-                           class="btn btn-sm me-2 @(string.IsNullOrEmpty(categoriaSeleccionada) ? "btn-warning fw-bold" : "btn-outline-warning")">
-                            Todas
-                        </a>
-
-                        @foreach (var cat in categorias)
-                        {
-                            <a href="@($"{appRoot}?categoria={System.Net.WebUtility.UrlEncode(cat)}")"
-                               class="btn btn-sm me-2 @(cat == categoriaSeleccionada ? "btn-warning fw-bold" : "btn-outline-warning")">
-                                @cat
-                            </a>
-                        }
-                    </div>
-                }
-
-                <!-- Botón responsive -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Menú -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Index", "Productos")">Catálogo</a>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    @if (categorias != null && ViewData["Title"]?.ToString() == "Catálogo")
+                    {
+                        <ul class="navbar-nav me-auto align-items-center d-none d-lg-flex">
+                            <li class="nav-item">
+                                <a class="nav-link @(string.IsNullOrEmpty(categoriaSeleccionada) ? "active" : "")"
+                                   href="@($"{appRoot}?categoria=")">
+                                    Todas
+                                </a>
+                            </li>
+                            @for (int i = 0; i < categorias.Count; i++)
+                            {
+                                <li class="nav-item nav-link d-none d-lg-block">|</li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(categorias[i] == categoriaSeleccionada ? "active" : "")"
+                                       href="@($"{appRoot}?categoria={System.Net.WebUtility.UrlEncode(categorias[i])}")">
+                                        @categorias[i]
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="@Url.Action("Index", "Productos")">Catálogo</a>
+                        </li>
+                        <li class="nav-item me-2 d-none d-lg-block">
+                            <a class="nav-link" href="@Url.Action("About", "Home")">Nosotros</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="@Url.Action("Contact", "Home")">Contacto</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Privacy", "Catalogo")">Privacidad</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="@Url.Action("Contact", "Catalogo")">Contacto</a>
+                            <a class="btn btn-outline-light btn-sm" href="@Url.Action("Privacy", "Home")">Privacidad</a>
                         </li>
                     </ul>
                 </div>
@@ -96,23 +102,73 @@
         </nav>
     </header>
 
-    <!-- Contenido principal -->
-    <main class="container mt-4 text-light">
-        @RenderBody()
+    <main class="flex-grow-1">
+        <div class="container">
+            @RenderBody()
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="text-center py-3 bg-dark border-top border-warning">
-        <p class="mb-0 text-warning">&copy; @DateTime.Now.Year - Tienda Erótica</p>
+    <footer class="text-center py-4">
+        <div class="small">
+            © @DateTime.Now.Year SensualShop — Envío discreto | Atención confidencial
+        </div>
+        <div class="small mt-2">
+            <a href="https://wa.me/573248416899" class="link-light text-decoration-none">+57 324 841 6899</a>
+        </div>
     </footer>
 
-    <!-- Botón flotante WhatsApp -->
-    <a href="https://wa.me/573248416899" class="whatsapp-float" target="_blank" rel="noopener">
-        <img src="@Url.Content("~/images/whatsapp.jpg")" alt="WhatsApp" />
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="quickViewTitle"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <img id="quickViewImg" src="~/images/placeholder.png" alt="Imagen producto" class="img-fluid rounded" />
+                        </div>
+                        <div class="col-md-6">
+                            <p id="quickViewDesc"></p>
+                            <p class="h4 fw-bold" id="quickViewPrice"></p>
+                            <div class="mb-3" id="quickViewTags"></div>
+                            <div class="d-flex gap-2">
+                                <button id="quickAddBtn" class="btn btn-warning">Añadir al carrito</button>
+                                <a id="quickDetailLink" class="btn btn-outline-light" href="#">Ver página</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="whatsapp-float" href="https://wa.me/573248416899" target="_blank" rel="noopener">
+        <img src="~/images/whatsapp.jpg" alt="WhatsApp" />
     </a>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var lastScrollTop = 0;
+            var header = document.querySelector('header');
+            var headerHeight = header.offsetHeight;
+
+            window.addEventListener('scroll', function() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
+                    header.classList.add('navbar-hidden');
+                } else {
+                    header.classList.remove('navbar-hidden');
+                }
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            });
+        });
+    </script>
+    <script src="~/js/site.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -1,175 +1,234 @@
-﻿/* =======================
-   FONDO ANIMADO E ILUMINACIÓN
-   ======================= */
-.fondo-animado {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/images/mandalas.jpg') center center / cover no-repeat;
-    z-index: -2;
+﻿/* ==================== Variables de Color ==================== */
+:root {
+    --accent: #FFD166; /* dorado suave */
+    --accent-2: #9B5DE5; /* morado */
+    --bg-dark: #0b0b0d;
+    --card-dark: rgba(255,255,255,0.03);
+    --text-light: #eee;
 }
 
-    /* Capa de luces animadas */
-    .fondo-animado::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.35), transparent 60%), /* dorado clásico */
-        radial-gradient(circle at 70% 60%, rgba(138, 43, 226, 0.25), transparent 60%); /* morado púrpura */
-        background-size: 200% 200%;
-        animation: iluminar 20s ease-in-out infinite alternate;
-        z-index: -1;
-    }
-
-/* Animación de luces */
-@keyframes iluminar {
-    0% {
-        background-position: 0% 0%, 50% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%, 0% 100%;
-    }
-
-    100% {
-        background-position: 50% 100%, 100% 0%;
-    }
+/* ==================== Base y Tipografía ==================== */
+* {
+    box-sizing: border-box;
 }
 
-
-/* Forzar body transparente para que el fondo se vea */
 body {
-    background: transparent !important;
     font-family: 'Poppins', sans-serif;
+    background: transparent;
+    color: var(--text-light);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* =======================
-   ESTILOS DEL CATÁLOGO
-   ======================= */
+/* ==================== Fondo Decorativo ==================== */
+.site-bg {
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(180deg, rgba(11,11,13,0.65), rgba(11,11,13,0.85)), url('/images/mandalas.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+    filter: saturate(0.95) contrast(0.95);
+}
 
-/* Título del catálogo */
-.catalogo-titulo {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: #ffffff;
-    text-shadow: 0 0 8px #FFD700, 0 0 12px rgba(138, 43, 226, 0.6);
+.site-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(255,209,102,0.12), transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(155,93,229,0.08), transparent 20%);
+    animation: moveGlow 20s infinite alternate;
+}
+
+@keyframes moveGlow {
+    from { transform: translateY(0) }
+    to   { transform: translateY(-10px) }
+}
+
+/* ==================== Header y Navegación ==================== */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.navbar {
+    background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(0,0,0,0.5));
+    border-bottom: 1px solid rgba(255,209,102,0.06);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+}
+
+.logo-small {
+    height: 48px;
+    width: auto;
+}
+
+.brand-title {
+    font-weight: 800;
+    color: var(--accent);
+    font-size: 1.15rem;
+    letter-spacing: 0.6px;
+}
+
+/* ==================== Categorías ==================== */
+.navbar-nav .nav-link {
     position: relative;
-    padding-bottom: 10px;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
-    .catalogo-titulo::after {
-        content: '';
-        position: absolute;
-        width: 60px;
-        height: 4px;
-        background-color: #FFD700;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        border-radius: 2px;
-    }
-
-/* Cards de productos */
-.producto-card {
-    background-color: #000000;
-    border: 2px solid #FFD700;
-    border-radius: 15px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0%;
+    height: 2px;
+    background: var(--accent-2);
+    transition: width 0.35s ease-in-out;
 }
 
-    .producto-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
-    }
-
-    /* Imagen dentro de la card */
-    .producto-card .card-img-top {
-        border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-        filter: grayscale(0.1) contrast(1.1);
-        transition: filter 0.3s ease;
-    }
-
-    .producto-card:hover .card-img-top {
-        filter: grayscale(0) contrast(1);
-    }
-
-/* Nombre del producto */
-.producto-nombre {
-    font-weight: 800;
-    font-size: 1.9rem;
-    color: #FFD700;
-}
-
-/* Precio del producto */
-.producto-precio {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #f5f5f5; /* Blanco elegante */
-    text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 12px rgba(138, 43, 226, 0.4);
-}
-
-/* Botón de detalles */
-.btn-detalles {
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
     width: 100%;
-    border-radius: 8px;
-    font-weight: 600;
-    background-color: #ffffff; /* blanco */
-    border-color: #ffffff;
-    color: #000;
-    transition: all 0.3s ease;
-    animation: destello-boton 2s infinite ease-in-out;
 }
 
-/* Efecto de destello en el botón */
-@keyframes destello-boton {
-    0% {
-        box-shadow: 0 0 4px rgba(255, 215, 0, 0.4), 0 0 8px rgba(138, 43, 226, 0.3);
-    }
-
-    50% {
-        box-shadow: 0 0 10px rgba(255, 215, 0, 1), 0 0 20px rgba(138, 43, 226, 0.8);
-        background-color: #fffbe8; /* un blanco cálido en el destello */
-    }
-
-    100% {
-        box-shadow: 0 0 4px rgba(255, 215, 0, 0.4), 0 0 8px rgba(138, 43, 226, 0.3);
-    }
+.navbar-nav .nav-link:hover {
+    color: var(--accent) !important;
 }
 
+/* ==================== Hero Section ==================== */
+.hero {
+    background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.35));
+    border-radius: 12px;
+    padding: 48px 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
 
-    .btn-detalles:hover {
-        background-color: #FFD700; /* dorado */
-        border-color: #FFD700;
-        color: #000;
-        box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
-    }
+/* ==================== Tarjetas de Producto ==================== */
+.producto-card {
+    background-color: rgba(25, 25, 25, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
+}
 
-/* Botón flotante WhatsApp */
+.producto-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent);
+}
+
+.producto-img {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+    transition: transform .4s ease, filter .35s ease;
+}
+
+.producto-card:hover .producto-img {
+    transform: scale(1.03);
+    filter: saturate(1.1) contrast(1.05);
+}
+
+/* Etiqueta superior */
+.etiqueta {
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(90deg,var(--accent),var(--accent-2));
+    color: #111;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+/* Texto y precio */
+.producto-nombre {
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+    font-size: 1rem;
+}
+
+.producto-categoria {
+    font-size: 0.85rem;
+}
+
+.producto-precio {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+/* Rating */
+.producto-rating .star {
+    color: rgba(255,255,255,0.18);
+}
+
+.producto-rating .star.filled {
+    color: var(--accent);
+    text-shadow: 0 0 8px rgba(255,209,102,0.5);
+}
+
+/* Botones */
+.btn-warning {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111;
+    font-weight: 700;
+}
+
+.btn-outline-light {
+    border-color: rgba(255,255,255,0.12);
+    color: #fff;
+}
+
+.quick-view-btn {
+    font-size: 0.85rem;
+}
+
+/* ==================== WhatsApp Flotante ==================== */
 .whatsapp-float {
     position: fixed;
-    width: 85px;
-    height: 85px;
-    bottom: 20px;
-    right: 20px;
+    right: 18px;
+    bottom: 18px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    overflow: hidden; /* recorta el logo dentro del círculo */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
     z-index: 999;
 }
 
-    .whatsapp-float img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* la imagen llena el círculo */
-    }
+.whatsapp-float img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
+/* ==================== Footer ==================== */
+footer {
+    background: linear-gradient(180deg, rgba(0,0,0,0.2), transparent);
+}
 
+/* ==================== Responsive ==================== */
+@media (max-width:768px) {
+    .producto-img { height: 180px; }
+    .logo-small { height: 42px; }
+}
 
+/* ==================== Accesibilidad y Animaciones ==================== */
+a:focus, button:focus, input:focus {
+    outline: 3px solid rgba(255,209,102,0.18);
+    outline-offset: 2px;
+}
 
-
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
