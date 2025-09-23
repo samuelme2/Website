@@ -158,15 +158,116 @@ body {
     bottom: 20px;
     right: 20px;
     border-radius: 50%;
-    overflow: hidden; /* recorta el logo dentro del círculo */
+    background-color: white; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 999;
+    overflow: visible; /* 👈 muy importante: permite que el mensaje salga fuera del círculo */
 }
 
+
     .whatsapp-float img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* la imagen llena el círculo */
+        width: 90%;
+        height: auto;
+    }
+
+
+    /* Mensaje emergente del botón WhatsApp */
+    .whatsapp-float .whatsapp-msg {
+        position: absolute;
+        right: 100%; /* aparece a la izquierda */
+        top: 50%;
+        transform: translateY(-50%) translateX(20px);
+        background: #25D366; /* verde oficial de WhatsApp */
+        color: #ffffff; /* texto blanco */
+        font-size: 1rem;
+        padding: 10px 16px;
+        border-radius: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        margin-right: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 15px rgba(37, 211, 102, 0.5);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+        /* Flechita apuntando al botón */
+        .whatsapp-float .whatsapp-msg::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent transparent #25D366;
+        }
+
+    /* Animación al pasar el mouse */
+    .whatsapp-float:hover .whatsapp-msg {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+
+
+        /* Flechita apuntando al botón */
+        .whatsapp-float .whatsapp-msg::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent transparent #ffffff;
+        }
+
+    /* Animación al pasar el mouse */
+    .whatsapp-float:hover .whatsapp-msg {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+
+
+        /* Flechita estilo elegante */
+        .whatsapp-float .whatsapp-msg::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent transparent rgba(40,40,40,0.95);
+        }
+
+    /* Animación al pasar el mouse */
+    .whatsapp-float:hover .whatsapp-msg {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+
+
+        /* Triangulito (flecha) que apunta al botón */
+        .whatsapp-float .whatsapp-msg::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent transparent rgba(0, 0, 0, 0.85);
+        }
+
+    /* Mostrar mensaje al pasar el cursor */
+    .whatsapp-float:hover .whatsapp-msg {
+        opacity: 1;
+        transform: translateY(-50%) translateX(-5px);
     }
 
 
