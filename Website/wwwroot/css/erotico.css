@@ -38,17 +38,26 @@ body {
         content: "";
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at 20% 30%, rgba(255,209,102,0.12), transparent 20%), radial-gradient(circle at 80% 70%, rgba(155,93,229,0.08), transparent 20%);
-        animation: moveGlow 20s infinite alternate;
+        background: radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.25), transparent 60%), /* dorado */
+        radial-gradient(circle at 70% 60%, rgba(155, 93, 229, 0.25), transparent 60%), /* morado */
+        radial-gradient(circle at 40% 80%, rgba(255, 100, 0, 0.15), transparent 60%); /* naranja suave */
+        background-size: 200% 200%;
+        animation: iluminar 20s ease-in-out infinite alternate;
+        z-index: -1;
     }
 
-@keyframes moveGlow {
-    from {
-        transform: translateY(0)
+/* Animación luces */
+@keyframes iluminar {
+    0% {
+        background-position: 0% 0%, 50% 50%, 100% 100%;
     }
 
-    to {
-        transform: translateY(-10px)
+    50% {
+        background-position: 100% 50%, 0% 100%, 50% 0%;
+    }
+
+    100% {
+        background-position: 50% 100%, 100% 0%, 0% 50%;
     }
 }
 
@@ -129,10 +138,9 @@ header {
 /* Ajuste clave: Mantiene la proporción de la imagen */
 .producto-img {
     width: 100%;
-    height: auto; /* ya no fuerzas el recorte */
+    height: auto;
     object-fit: contain;
 }
-
 
 .producto-card:hover .producto-img {
     transform: scale(1.03);
@@ -180,13 +188,6 @@ header {
     }
 
 /* Botones */
-.btn-warning {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #111;
-    font-weight: 700;
-}
-
 .btn-outline-light {
     border-color: rgba(255,255,255,0.12);
     color: #fff;
@@ -222,7 +223,7 @@ header {
     /* Mensaje emergente */
     .whatsapp-float .whatsapp-msg {
         position: absolute;
-        right: 100%; /* aparece a la izquierda */
+        right: 100%;
         top: 50%;
         transform: translateY(-50%) translateX(10px);
         background: #25D366;
@@ -239,7 +240,6 @@ header {
         font-weight: 600;
     }
 
-        /* Flechita apuntando al botón */
         .whatsapp-float .whatsapp-msg::after {
             content: "";
             position: absolute;
@@ -251,12 +251,10 @@ header {
             border-color: transparent transparent transparent #25D366;
         }
 
-    /* Mostrar mensaje al pasar el cursor */
     .whatsapp-float:hover .whatsapp-msg {
         opacity: 1;
         transform: translateY(-50%) translateX(-5px);
     }
-
 
 /* ==================== Footer ==================== */
 footer {
@@ -287,5 +285,88 @@ a:focus, button:focus, input:focus {
 
     100% {
         transform: scale(1);
+    }
+}
+
+/* Botón verde personalizado para carrito */
+.btn-add-cart {
+    background: #28a745;
+    border-color: #28a745;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.2s ease-in-out, background 0.3s ease;
+}
+
+    .btn-add-cart:hover {
+        animation: bounce 0.6s;
+        background: #218838;
+        color: #fff;
+    }
+
+/* Animación de rebote */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-6px);
+    }
+
+    60% {
+        transform: translateY(-3px);
+    }
+}
+
+/* Botón Ver Detalles con efectos 🔥 */
+.btn-warning {
+    position: relative;
+    overflow: hidden;
+    background: var(--accent);
+    border: none;
+    font-weight: 700;
+    color: #111;
+    animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+/* Brillo constante (pulso) */
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0px rgba(255, 209, 102, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 18px rgba(255, 209, 102, 0.85);
+    }
+
+    100% {
+        box-shadow: 0 0 0px rgba(255, 209, 102, 0.4);
+    }
+}
+
+/* Resplandor lateral en hover */
+.btn-warning::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.7), transparent);
+    transform: skewX(-25deg);
+}
+
+.btn-warning:hover::before {
+    animation: shine 0.9s forwards;
+}
+
+/* Animación de barrido */
+@keyframes shine {
+    100% {
+        left: 125%;
     }
 }
