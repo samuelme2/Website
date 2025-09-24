@@ -14,7 +14,11 @@
         {
             <div class="col">
                 <div class="card h-100 producto-card position-relative">
-                    <img src="@producto.ImagenUrl" class="producto-img" alt="@producto.Nombre">
+
+                    <!-- Contenedor para imagen -->
+                    <div class="img-wrapper">
+                        <img src="@producto.ImagenUrl" class="producto-img" alt="@producto.Nombre">
+                    </div>
 
                     <div class="card-body d-flex flex-column justify-content-between">
                         <div>
@@ -38,7 +42,6 @@
                     </div>
                 </div>
             </div>
-
         }
     </div>
 </div>

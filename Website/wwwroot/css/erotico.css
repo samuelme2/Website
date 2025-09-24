@@ -126,12 +126,13 @@ header {
         box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent);
     }
 
+/* Ajuste clave: Mantiene la proporción de la imagen */
 .producto-img {
-    height: 220px;
-    object-fit: cover;
     width: 100%;
-    transition: transform .4s ease, filter .35s ease;
+    height: auto; /* ya no fuerzas el recorte */
+    object-fit: contain;
 }
+
 
 .producto-card:hover .producto-img {
     transform: scale(1.03);
@@ -264,10 +265,6 @@ footer {
 
 /* ==================== Responsive ==================== */
 @media (max-width:768px) {
-    .producto-img {
-        height: 180px;
-    }
-
     .logo-small {
         height: 42px;
     }
