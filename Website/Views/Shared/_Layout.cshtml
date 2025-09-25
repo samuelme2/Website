@@ -25,12 +25,12 @@
         }
 
         main {
-            padding-top: 105px;
+            padding-top: 120px;
         }
 
         @@media (max-width: 768px) {
             main {
-                padding-top: 95px;
+                padding-top: 100px;
             }
         }
     </style>
@@ -48,20 +48,24 @@
 
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand d-flex align-items-center gap-2" href="@appRoot">
+            <div class="container-fluid d-flex flex-nowrap align-items-center">
+
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center gap-2" href="@Url.Action("Index", "Home")">
                     <img src="~/images/logo.png" alt="SensualShop" class="logo-small" />
-                    <span class="brand-title">SensualShop</span>
+                    <span class="brand-title">LS TIENDA ÍNTIMA</span>
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="mainNav">
+                <div class="collapse navbar-collapse d-flex flex-nowrap align-items-center" id="mainNav">
+
+                    <!-- 🔥 Filtros (Amarillo) -->
                     @if (categorias != null && ViewData["Title"]?.ToString() == "Catálogo")
                     {
-                        <ul class="navbar-nav me-auto align-items-center d-none d-lg-flex">
+                        <ul class="navbar-nav navbar-filtros me-3 flex-nowrap">
                             <li class="nav-item">
                                 <a class="nav-link @(string.IsNullOrEmpty(categoriaSeleccionada) ? "active" : "")"
                                    href="@($"{appRoot}?categoria=")">
@@ -70,7 +74,6 @@
                             </li>
                             @for (int i = 0; i < categorias.Count; i++)
                             {
-                                <li class="nav-item nav-link d-none d-lg-block">|</li>
                                 <li class="nav-item">
                                     <a class="nav-link @(categorias[i] == categoriaSeleccionada ? "active" : "")"
                                        href="@($"{appRoot}?categoria={System.Net.WebUtility.UrlEncode(categorias[i])}")">
@@ -78,12 +81,20 @@
                                     </a>
                                 </li>
                             }
+                            <!-- Categoría fija -->
+                            <li class="nav-item">
+                                <a class="nav-link @(categoriaSeleccionada == "Lencería" ? "active" : "")"
+                                   href="@($"{appRoot}?categoria=Lencería")">
+                                    Lencería y disfraces
+                                </a>
+                            </li>
                         </ul>
                     }
 
-                    <ul class="navbar-nav ms-auto align-items-center">
+                    <!-- 🔥 Opciones Generales (Morado) -->
+                    <ul class="navbar-nav navbar-opciones flex-nowrap align-items-center me-auto">
                         <li class="nav-item me-2">
-                            <a class="nav-link" href="@Url.Action("Index", "Productos")">Catálogo</a>
+                            <a class="nav-link" href="@Url.Action("Productos", "Catalogo")">Catálogo</a>
                         </li>
                         <li class="nav-item me-2 d-none d-lg-block">
                             <a class="nav-link" href="@Url.Action("About", "Home")">Nosotros</a>
@@ -94,7 +105,11 @@
                         <li class="nav-item">
                             <a class="btn btn-outline-light btn-sm" href="@Url.Action("Privacy", "Home")">Privacidad</a>
                         </li>
-                        <li class="nav-item ms-2">
+                    </ul>
+
+                    <!-- 🛒 Carrito (aparte, extremo derecho) -->
+                    <ul class="navbar-nav ms-auto me-4">
+                        <li class="nav-item">
                             <a href="#" class="nav-link position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas">
                                 <i class="bi bi-cart3 fs-5 text-warning"></i>
                                 <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -150,12 +165,12 @@
     <script src="~/js/carrito.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             var lastScrollTop = 0;
             var header = document.querySelector('header');
             var headerHeight = header.offsetHeight;
 
-            window.addEventListener('scroll', function() {
+            window.addEventListener('scroll', function () {
                 var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                 if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
                     header.classList.add('navbar-hidden');
