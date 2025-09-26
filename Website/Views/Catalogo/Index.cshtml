@@ -45,7 +45,23 @@
 
                         <!-- Imagen -->
                         <div class="img-wrapper">
-                            <img src="@producto.ImagenUrl" class="producto-img" alt="@producto.Nombre">
+                            <div id="carousel-@producto.Id" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    @for (int i = 0; i < producto.ImagenUrl.Count; i++)
+                                    {
+                                        var active = i == 0 ? "active" : "";
+                                        <div class="carousel-item @active">
+                                            <img src="@producto.ImagenUrl[i]" class="d-block w-100 producto-img" alt="@producto.Nombre">
+                                        </div>
+                                    }
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@producto.Id" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-@producto.Id" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Info -->
