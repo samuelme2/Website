@@ -51,7 +51,11 @@ namespace TuProyecto.Services
                         // Usa CultureInfo.InvariantCulture porque el Python script genera un punto (.) como separador decimal.
                         precio = 0.00m;
                     }
-                    var imagenes = imagenUrlCompleta.Split('|').Select(url => url.Trim()).Where(url => !string.IsNullOrEmpty(url)).ToList();
+                    var imagenes = imagenUrlCompleta
+                        .Split('|')
+                        .Select(url => url.Trim())
+                        .Where(url => !string.IsNullOrEmpty(url))
+                        .ToList();
 
                     productos.Add(new Producto
                     {
@@ -59,9 +63,10 @@ namespace TuProyecto.Services
                         Nombre = nombre,
                         Categoria = "Juguetes",
                         Precio = precio,
-                        ImagenUrl = imagenes,
+                        ImagenUrls = imagenes,
                         Descripcion = descripcion
                     });
+
                 }
             }
 

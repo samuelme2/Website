@@ -30,9 +30,9 @@ namespace TuProyecto.Controllers
                 // 2. Agregar los catálogos PDF fijos (opcional, si los quieres en la misma lista)
                 // Aunque los manejas aparte, es bueno tenerlos en la lista si usas ViewBag.Categorias
                 _productos.AddRange(new List<Producto>
-                {
-                    new Producto { Id = 101, Nombre = "Cereza", Categoria = "Lencería", ImagenUrl = "/images/catalogo1.jpg" },
-                    new Producto { Id = 102, Nombre = "Fantasy", Categoria = "Lencería", ImagenUrl = "/images/catalogo2.jpg" }
+                {new Producto { Id = 101, Nombre = "Cereza", Categoria = "Lencería", ImagenUrls = new List<string> { "/images/catalogo1.jpg" } },
+                new Producto { Id = 102, Nombre = "Fantasy", Categoria = "Lencería", ImagenUrls = new List<string> { "/images/catalogo2.jpg" } }
+
                 });
 
                 // Si quieres añadir un producto estático de ejemplo:

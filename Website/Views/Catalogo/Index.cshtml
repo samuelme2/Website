@@ -17,7 +17,7 @@
                     <div class="card h-100 producto-card text-center">
                         <!-- Imagen -->
                         <div class="img-wrapper">
-                            <img src="@cat.ImagenUrl" class="producto-img" alt="@cat.Nombre">
+                            <img src="@cat.ImagenUrls" class="producto-img" alt="@cat.Nombre">
                         </div>
 
                         <!-- Info -->
@@ -45,24 +45,39 @@
 
                         <!-- Imagen -->
                         <div class="img-wrapper">
-                            <div id="carousel-@producto.Id" class="carousel slide" data-bs-ride="carousel">
-                                <div class="carousel-inner">
-                                    @for (int i = 0; i < producto.ImagenUrl.Count; i++)
-                                    {
-                                        var active = i == 0 ? "active" : "";
-                                        <div class="carousel-item @active">
-                                            <img src="@producto.ImagenUrl[i]" class="d-block w-100 producto-img" alt="@producto.Nombre">
-                                        </div>
-                                    }
+                            @if (producto.ImagenUrls != null && producto.ImagenUrls.Count > 1)
+                            {
+                                <!-- Carrusel si hay varias imágenes -->
+                                <div id="carousel-@producto.Id" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        @for (int i = 0; i < producto.ImagenUrls.Count; i++)
+                                        {
+                                            var active = i == 0 ? "active" : "";
+                                            <div class="carousel-item @active">
+                                                <img src="@producto.ImagenUrls[i]" class="d-block w-100 producto-img" alt="@producto.Nombre">
+                                            </div>
+                                        }
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@producto.Id" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-@producto.Id" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon"></span>
+                                    </button>
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@producto.Id" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon"></span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-@producto.Id" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon"></span>
-                                </button>
-                            </div>
+                            }
+                            else if (producto.ImagenUrls != null && producto.ImagenUrls.Count == 1)
+                            {
+                                <!-- Imagen única -->
+                                <img src="@producto.ImagenUrls[0]" class="producto-img" alt="@producto.Nombre">
+                            }
+                            else
+                            {
+                                <!-- Imagen por defecto -->
+                                <img src="/images/default.jpg" class="producto-img" alt="@producto.Nombre">
+                            }
                         </div>
+
 
                         <!-- Info -->
                         <div class="card-body d-flex flex-column justify-content-between">
@@ -80,7 +95,7 @@
                                         data-id="@producto.Id"
                                         data-nombre="@producto.Nombre"
                                         data-precio="@producto.Precio"
-                                        data-imagen="@producto.ImagenUrl">
+                                        data-imagen="@producto.ImagenUrls">
                                     <i class="bi bi-cart-plus"></i> Añadir al carrito
                                 </button>
                             </div>
