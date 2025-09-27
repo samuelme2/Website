@@ -409,6 +409,31 @@ footer {
     background: linear-gradient(180deg, rgba(0,0,0,0.2), transparent);
 }
 
+/* ==================== Descripción Detalle ==================== */
+.descripcion-detalle {
+    background: rgba(255, 255, 255, 0.08); /* Fondo translúcido */
+    border-left: 5px solid var(--accent); /* Línea lateral dorada */
+    padding: 18px 20px;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #f1f1f1;
+    font-weight: 400;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+    .descripcion-detalle:hover {
+        transform: scale(1.01);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 0 12px var(--accent);
+    }
+
+    .descripcion-detalle strong {
+        color: var(--accent); /* Resaltar palabras clave en dorado */
+        font-weight: 700;
+    }
+
+
 /* ==================== Responsive ==================== */
 @media (max-width:768px) {
     .logo-small {

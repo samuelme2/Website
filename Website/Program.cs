@@ -1,8 +1,23 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// ► Configurar cultura por defecto (Colombia: puntos de miles)
+var defaultCulture = new CultureInfo("es-CO");
+CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
+
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(defaultCulture),
+    SupportedCultures = new[] { defaultCulture },
+    SupportedUICultures = new[] { defaultCulture }
+};
 
 if (!app.Environment.IsDevelopment())
 {
@@ -13,11 +28,13 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
+// Aplicar middleware de localización antes de renderizar vistas
+app.UseRequestLocalization(localizationOptions);
 
+app.UseRouting();
 app.UseAuthorization();
 
-// 🚀 Ruta principal: abre el catálogo directamente
+// Ruta por defecto: abre el catálogo
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Catalogo}/{action=Index}/{id?}");
