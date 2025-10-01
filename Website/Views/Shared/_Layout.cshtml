@@ -25,14 +25,39 @@
         }
 
         main {
-            padding-top: 120px;
+            padding-top: 180px;
         }
 
         @@media (max-width: 768px) {
             main {
-                padding-top: 100px;
+                padding-top: 160px;
             }
         }
+
+        /* 🔹 Estilos para el dropdown personalizado */
+        .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .nav-item.dropdown:hover > .nav-link {
+            background-color: #ffc107; /* Amarillo */
+            color: #000 !important;
+            border-radius: 4px;
+        }
+
+        .dropdown-menu {
+            background-color: #222;
+            border: 1px solid rgba(255,209,102,0.2);
+        }
+
+            .dropdown-menu .dropdown-item {
+                color: #fff;
+            }
+
+                .dropdown-menu .dropdown-item:hover {
+                    background-color: #ffc107;
+                    color: #000;
+                }
     </style>
 
     <meta name="description" content="SensualShop - Tienda online de productos íntimos, juguetes y bienestar sexual. Envío discreto y atención personalizada." />
@@ -42,57 +67,116 @@
 
     @{
         var appRoot = Url.Content("~");
-        var categorias = ViewBag.Categorias as List<string>;
         var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as string;
     }
 
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container-fluid d-flex flex-nowrap align-items-center">
+        <!-- 🔹 Barra Superior -->
+        <div class="top-bar text-center py-1" style="background: rgba(0,0,0,0.65); color: var(--accent); font-weight: 600; font-size: 0.95rem;">
+            🚚 Envíos 100% discretos
+        </div>
 
-                <!-- Logo -->
-                <a class="navbar-brand d-flex align-items-center gap-2" href="@Url.Action("Index", "Home")">
+        <!-- 🔹 Barra del medio -->
+        <div class="middle-bar d-flex justify-content-between align-items-center px-4 py-3"
+             style="background: linear-gradient(90deg, rgba(0,0,0,0.65), rgba(0,0,0,0.5)); border-bottom: 1px solid rgba(255,209,102,0.06);">
+
+            <!-- Logo -->
+            <div class="d-flex align-items-center gap-2">
+                <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="@Url.Action("Index", "Home")">
                     <img src="~/images/logo.png" alt="SensualShop" class="logo-small" />
                     <span class="brand-title">LS TIENDA ÍNTIMA</span>
                 </a>
+            </div>
 
+            <!-- Buscador -->
+            <div class="flex-grow-1 px-4">
+                <form class="d-flex" action="/Catalogo/Productos" method="get">
+                    <input type="search" class="form-control me-2"
+                           placeholder="Buscar productos..."
+                           style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 6px;">
+                    <button class="btn btn-warning" type="submit">Buscar</button>
+                </form>
+            </div>
+
+            <!-- Carrito -->
+            <div>
+                <a href="#" class="nav-link position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas">
+                    <i class="bi bi-cart3 fs-5 text-warning"></i>
+                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 🔹 Barra inferior: Filtros -->
+        <nav class="navbar navbar-expand-lg px-3"
+             style="background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(0,0,0,0.5));">
+            <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse d-flex flex-nowrap align-items-center" id="mainNav">
+                <div class="collapse navbar-collapse justify-content-center" id="mainNav">
+                    <ul class="navbar-nav navbar-filtros flex-wrap">
+                        <li class="nav-item">
+                            <a class="nav-link @(string.IsNullOrEmpty(categoriaSeleccionada) ? "active" : "")"
+                               href="@($"{appRoot}?categoria=")">Todas</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Lovense" ? "active" : "")" href="@($"{appRoot}?categoria=Lovense")">Lovense</a></li>
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Lubricantes" ? "active" : "")" href="@($"{appRoot}?categoria=Lubricantes")">Lubricantes</a></li>
 
-                    <!-- 🔥 Filtros (Amarillo) -->
-                    @if (categorias != null && ViewData["Title"]?.ToString() == "Catálogo")
-                    {
-                        <ul class="navbar-nav navbar-filtros me-3 flex-nowrap">
-                            <li class="nav-item">
-                                <a class="nav-link @(string.IsNullOrEmpty(categoriaSeleccionada) ? "active" : "")"
-                                   href="@($"{appRoot}?categoria=")">
-                                    Todas
-                                </a>
-                            </li>
-                            @for (int i = 0; i < categorias.Count; i++)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link @(categorias[i] == categoriaSeleccionada ? "active" : "")"
-                                       href="@($"{appRoot}?categoria={System.Net.WebUtility.UrlEncode(categorias[i])}")">
-                                        @categorias[i]
-                                    </a>
+                        <li class="nav-item dropdown">
+                            <!-- Enlace principal Juguetes -->
+                            <a class="nav-link @(categoriaSeleccionada == "Juguetes" ? "active" : "")"
+                               href="@($"{appRoot}?categoria=Juguetes")">
+                                Juguetes
+                            </a>
+
+                            <!-- Botón de desplegar subcategorías -->
+                            <a class="nav-link dropdown-toggle dropdown-toggle-split"
+                               href="#" id="juguetesDropdown"
+                               role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                            </a>
+
+                            <!-- Subfiltros -->
+                            <ul class="dropdown-menu bg-warning" aria-labelledby="juguetesDropdown">
+                                <li>
+                                    <a class="dropdown-item @(categoriaSeleccionada == "Dildos" ? "active" : "")"
+                                       href="@($"{appRoot}?categoria=Dildos")">Dildos</a>
                                 </li>
-                            }
-                            <!-- Categoría fija -->
-                            <li class="nav-item">
-                                <a class="nav-link @(categoriaSeleccionada == "Lencería" ? "active" : "")"
-                                   href="@($"{appRoot}?categoria=Lencería")">
-                                    Lencería y disfraces
-                                </a>
-                            </li>
-                        </ul>
-                    }
+                                <li>
+                                    <a class="dropdown-item @(categoriaSeleccionada == "Vibradores" ? "active" : "")"
+                                       href="@($"{appRoot}?categoria=Vibradores")">Vibradores</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(categoriaSeleccionada == "Torsos" ? "active" : "")"
+                                       href="@($"{appRoot}?categoria=Torsos")">Torsos</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(categoriaSeleccionada == "Anales" ? "active" : "")"
+                                       href="@($"{appRoot}?categoria=Anales")">Anales</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(categoriaSeleccionada == "Sex Machines" ? "active" : "")"
+                                       href="@($"{appRoot}?categoria=Sex Machines")">Sex Machines</a>
+                                </li>
+                            </ul>
+                        </li>
 
-                    <!-- 🔥 Opciones Generales (Morado) -->
-                    <ul class="navbar-nav navbar-opciones flex-nowrap align-items-center me-auto">
+
+
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "LGBTIQ+" ? "active" : "")" href="@($"{appRoot}?categoria=LGBTIQ+")">LGBTIQ+</a></li>
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Bienestar" ? "active" : "")" href="@($"{appRoot}?categoria=Bienestar")">Bienestar</a></li>
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Bondage" ? "active" : "")" href="@($"{appRoot}?categoria=Bondage")">Bondage</a></li>
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Kits" ? "active" : "")" href="@($"{appRoot}?categoria=Kits")">Kits</a></li>
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Ofertas" ? "active" : "")" href="@($"{appRoot}?categoria=Ofertas")">Ofertas</a></li>
+                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Lencería" ? "active" : "")" href="@($"{appRoot}?categoria=Lencería")">Lencería y disfraces</a></li>
+                    </ul>
+
+                    <!-- Opciones generales -->
+                    <ul class="navbar-nav navbar-opciones flex-nowrap align-items-center ms-4">
                         <li class="nav-item me-2">
                             <a class="nav-link" href="@Url.Action("Productos", "Catalogo")">Catálogo</a>
                         </li>
@@ -104,18 +188,6 @@
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-outline-light btn-sm" href="@Url.Action("Privacy", "Home")">Privacidad</a>
-                        </li>
-                    </ul>
-
-                    <!-- 🛒 Carrito (aparte, extremo derecho) -->
-                    <ul class="navbar-nav ms-auto me-4">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas">
-                                <i class="bi bi-cart3 fs-5 text-warning"></i>
-                                <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    0
-                                </span>
-                            </a>
                         </li>
                     </ul>
                 </div>
@@ -163,7 +235,6 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/carrito.js"></script>
-
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

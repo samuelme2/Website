@@ -275,11 +275,12 @@ header {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    transition: transform 0.2s ease-in-out, background 0.3s ease;
+    /* Mantengo la transición para un hover suave, pero sin animación de rebote */
+    transition: background 0.3s ease; 
 }
 
     .btn-add-cart:hover {
-        animation: bounce 0.6s;
+        /* Se ELIMINA: animation: bounce 0.6s; */
         background: #218838;
         color: #fff;
     }
