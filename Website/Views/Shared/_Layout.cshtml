@@ -13,6 +13,43 @@
     <link rel="stylesheet" href="~/css/erotico.css" />
 
     <style>
+        /* Modificación de estilos para hacerlo más llamativo */
+        .dropdown-menu {
+            /* Fondo más oscuro y borde sutil */
+            background-color: #1a1a1a;
+            border: 1px solid var(--bs-warning); /* Usa el color de resalte */
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2); /* Sombra ámbar */
+            padding: 8px 0;
+        }
+
+            .dropdown-menu .dropdown-item {
+                color: #fff;
+                padding: 8px 15px; /* Más espacio */
+                transition: all 0.2s ease-in-out;
+            }
+
+                .dropdown-menu .dropdown-item:hover,
+                .dropdown-menu .dropdown-item.active-subfilter { /* Nuevo estilo para subfiltro activo */
+                    background-color: #ffc107; /* Fondo de resalte */
+                    color: #000;
+                    font-weight: 600;
+                    transform: translateX(5px); /* Pequeño desplazamiento al pasar el mouse */
+                    border-left: 3px solid #dc3545; /* Línea roja de énfasis */
+                }
+
+                    /* Asegura que el icono también cambie de color cuando está activo */
+                    .dropdown-menu .dropdown-item:hover i,
+                    .dropdown-menu .dropdown-item.active-subfilter i {
+                        color: #000 !important;
+                    }
+
+        /* Estilo para el botón de toggle cuando está abierto (en móviles/al hacer clic) */
+        .nav-item.dropdown .dropdown-toggle[aria-expanded="true"] {
+            color: #000 !important;
+            background-color: #ffc107;
+            border-radius: 4px;
+        }
         header {
             position: fixed;
             width: 100%;
@@ -152,30 +189,38 @@
                                 Juguetes
                             </a>
 
-                            @* Toggle para desplegar subfiltros (separa el control) *@
-                            <a class="nav-link dropdown-toggle dropdown-toggle-split ps-2" href="#" id="juguetesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir subfiltros Juguetes">
-                            </a>
+                            
 
                             <ul class="dropdown-menu" aria-labelledby="juguetesDropdown">
                                 <li>
-                                    <a class="dropdown-item @(isActive("Dildos") ? "active" : "")"
-                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Dildos" })">Dildos</a>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 @(isActive("Dildos") ? "active-subfilter" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Dildos" })">
+                                        <i class="bi bi-gender-male text-warning"></i> Dildos
+                                    </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(isActive("Vibradores") ? "active" : "")"
-                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Vibradores" })">Vibradores</a>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 @(isActive("Vibradores") ? "active-subfilter" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Vibradores" })">
+                                        <i class="bi bi-lightning-charge text-warning"></i> Vibradores
+                                    </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(isActive("Torsos") ? "active" : "")"
-                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Torsos" })">Torsos</a>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 @(isActive("Torsos") ? "active-subfilter" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Torsos" })">
+                                        <i class="bi bi-person-circle text-warning"></i> Torsos
+                                    </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(isActive("Anales") ? "active" : "")"
-                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Anales" })">Anales</a>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 @(isActive("Anales") ? "active-subfilter" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Anales" })">
+                                        <i class="bi bi-heart text-warning"></i> Anales
+                                    </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(isActive("Sex Machine") ? "active" : "")"
-                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Sex Machine" })">Sex Machine</a>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 @(isActive("Sex Machine") ? "active-subfilter" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Sex Machine" })">
+                                        <i class="bi bi-gear-fill text-warning"></i> Sex Machine
+                                    </a>
                                 </li>
                             </ul>
                         </li>

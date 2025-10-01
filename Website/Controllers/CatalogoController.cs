@@ -17,7 +17,7 @@ namespace TuProyecto.Controllers
         private static readonly Dictionary<string, List<string>> SubfiltroEquivalencias =
             new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
             {
-                { "Anales", new List<string> { "Anales", "Estimulación Anal", "Plugs Anales", "Plugs Anales" } },
+                { "Anales", new List<string> { "Anales", "Estimulación Anal", "Plugs Anales", "Plugs Anales" } }, // <-- ¡ESTO ES LO IMPORTANTE!
                 { "Vibradores", new List<string> { "Vibradores" } },
                 { "Dildos", new List<string> { "Dildos" } },
                 { "Torsos", new List<string> { "Torsos" } },

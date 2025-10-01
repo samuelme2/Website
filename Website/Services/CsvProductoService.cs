@@ -14,8 +14,22 @@ namespace TuProyecto.Services
         // Definición de subfiltros que pertenecen a la categoría principal "Juguetes"
         private static readonly HashSet<string> JUGUETES_SUBFILTERS = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "Dildos", "Vibradores", "Torsos", "Anales", "Sex Machine",
-            "Lubricantes", "Bienestar Sexual", "Bondage", "Kits"
+            "Dildos",
+            "Vibradores",
+            "Torsos", 
+            // AGREGAR: Nombres exactos de los subfiltros que aparecen en el CSV para que se categorice como "Juguetes"
+            "Anales",
+            "Estimulación Anal",
+            "Plugs Anales", 
+            // El subfiltro "Plugs Anales" estaba repetido, solo necesitamos uno, pero asegúrate de incluir todos los nombres exactos que vienen del CSV.
+            "Sex Machines", // Asumo que corregiste 'Sex Machine' a 'Sex Machines' si es lo que viene en el CSV, o déjalo como 'Sex Machine'
+            "Lubricantes",
+            "Bienestar", // Es posible que en el CSV venga "Bienestar" en lugar de "Bienestar Sexual"
+            "Bondage",
+            "Kits",
+            "Todo", // Si "Todo" aparece en el CSV y debe ser "Juguetes", inclúyelo.
+            "Últimas unidades", // Si "Últimas unidades" aparece en el CSV y debe ser "Juguetes", inclúyelo.
+            // ... agrega cualquier otro subfiltro del CSV que deba categorizarse como "Juguetes" ...
         };
 
         public static List<Producto> LoadProductos(string webRootPath)
