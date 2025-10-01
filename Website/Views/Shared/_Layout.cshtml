@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@* Layout modificado — usa CatalogoController(Index) para filtros y dropdown split para Juguetes *@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -34,20 +35,25 @@
             }
         }
 
-        /* 🔹 Estilos para el dropdown personalizado */
-        .nav-item.dropdown:hover .dropdown-menu {
+        /* dropdown: mostrar al hover SOLO en dispositivos con pointer (no en touch) */
+        @@media (hover: hover) and (pointer: fine) {
+            .nav-item.dropdown:hover .dropdown-menu
+
+        {
             display: block;
         }
 
-        .nav-item.dropdown:hover > .nav-link {
-            background-color: #ffc107; /* Amarillo */
+        .nav-item.dropdown:hover > .nav-link.dropdown-toggle {
             color: #000 !important;
+            background-color: #ffc107;
             border-radius: 4px;
+        }
+
         }
 
         .dropdown-menu {
             background-color: #222;
-            border: 1px solid rgba(255,209,102,0.2);
+            border: 1px solid rgba(255,209,102,0.15);
         }
 
             .dropdown-menu .dropdown-item {
@@ -66,17 +72,20 @@
     <div class="site-bg"></div>
 
     @{
-        var appRoot = Url.Content("~");
+        // Usamos ViewBag.CategoriaSeleccionada que pone el controller
         var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as string;
+        bool isEmptySelected = string.IsNullOrEmpty(categoriaSeleccionada);
+        Func<string, bool> isActive = cat =>
+        !string.IsNullOrEmpty(cat) && string.Equals(categoriaSeleccionada?.Trim(), cat.Trim(), System.StringComparison.OrdinalIgnoreCase);
     }
 
     <header>
-        <!-- 🔹 Barra Superior -->
+        <!-- Barra superior -->
         <div class="top-bar text-center py-1" style="background: rgba(0,0,0,0.65); color: var(--accent); font-weight: 600; font-size: 0.95rem;">
             🚚 Envíos 100% discretos
         </div>
 
-        <!-- 🔹 Barra del medio -->
+        <!-- Barra del medio -->
         <div class="middle-bar d-flex justify-content-between align-items-center px-4 py-3"
              style="background: linear-gradient(90deg, rgba(0,0,0,0.65), rgba(0,0,0,0.5)); border-bottom: 1px solid rgba(255,209,102,0.06);">
 
@@ -90,92 +99,114 @@
 
             <!-- Buscador -->
             <div class="flex-grow-1 px-4">
-                <form class="d-flex" action="/Catalogo/Productos" method="get">
-                    <input type="search" class="form-control me-2"
+                <form class="d-flex" action="@Url.Action("Index", "Catalogo")" method="get">
+                    <input name="q" type="search" class="form-control me-2"
                            placeholder="Buscar productos..."
                            style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 6px;">
                     <button class="btn btn-warning" type="submit">Buscar</button>
                 </form>
             </div>
 
-            <!-- Carrito -->
+            <!-- Carrito (extremo derecho) -->
             <div>
-                <a href="#" class="nav-link position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas">
-                    <i class="bi bi-cart3 fs-5 text-warning"></i>
-                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        0
-                    </span>
+                <a href="#" class="nav-link position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas" aria-label="Abrir carrito">
+                    <i class="bi bi-cart3 fs-5 text-warning" aria-hidden="true"></i>
+                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                 </a>
             </div>
         </div>
 
-        <!-- 🔹 Barra inferior: Filtros -->
-        <nav class="navbar navbar-expand-lg px-3"
-             style="background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(0,0,0,0.5));">
+        <!-- Barra inferior: filtros -->
+        <nav class="navbar navbar-expand-lg px-3" style="background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(0,0,0,0.5));">
             <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse justify-content-center" id="mainNav">
                     <ul class="navbar-nav navbar-filtros flex-wrap">
-                        <li class="nav-item">
-                            <a class="nav-link @(string.IsNullOrEmpty(categoriaSeleccionada) ? "active" : "")"
-                               href="@($"{appRoot}?categoria=")">Todas</a>
-                        </li>
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Lovense" ? "active" : "")" href="@($"{appRoot}?categoria=Lovense")">Lovense</a></li>
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Lubricantes" ? "active" : "")" href="@($"{appRoot}?categoria=Lubricantes")">Lubricantes</a></li>
 
+                        <!-- Todas -->
+                        <li class="nav-item">
+                            <a class="nav-link @(isEmptySelected ? "active" : "")"
+                               href="@Url.Action("Index", "Catalogo")">Todas</a>
+                        </li>
+
+                        <!-- Lovense -->
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("Lovense") ? "active" : "")"
+                               href="@Url.Action("Index", "Catalogo", new { categoria = "Lovense" })">Lovense</a>
+                        </li>
+
+                        <!-- Lubricantes -->
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("Lubricantes") ? "active" : "")"
+                               href="@Url.Action("Index", "Catalogo", new { categoria = "Lubricantes" })">Lubricantes</a>
+                        </li>
+
+                        <!-- Juguetes (split dropdown: label navega, toggle abre subfiltros) -->
                         <li class="nav-item dropdown">
-                            <!-- Enlace principal Juguetes -->
-                            <a class="nav-link @(categoriaSeleccionada == "Juguetes" ? "active" : "")"
-                               href="@($"{appRoot}?categoria=Juguetes")">
+                            @* Label principal: navega a Juguetes *@
+                            <a class="nav-link pe-0 @(isActive("Juguetes") ? "active" : "")"
+                               href="@Url.Action("Index", "Catalogo", new { categoria = "Juguetes" })">
                                 Juguetes
                             </a>
 
-                            <!-- Botón de desplegar subcategorías -->
-                            <a class="nav-link dropdown-toggle dropdown-toggle-split"
-                               href="#" id="juguetesDropdown"
-                               role="button" data-bs-toggle="dropdown"
-                               aria-expanded="false">
+                            @* Toggle para desplegar subfiltros (separa el control) *@
+                            <a class="nav-link dropdown-toggle dropdown-toggle-split ps-2" href="#" id="juguetesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir subfiltros Juguetes">
                             </a>
 
-                            <!-- Subfiltros -->
-                            <ul class="dropdown-menu bg-warning" aria-labelledby="juguetesDropdown">
+                            <ul class="dropdown-menu" aria-labelledby="juguetesDropdown">
                                 <li>
-                                    <a class="dropdown-item @(categoriaSeleccionada == "Dildos" ? "active" : "")"
-                                       href="@($"{appRoot}?categoria=Dildos")">Dildos</a>
+                                    <a class="dropdown-item @(isActive("Dildos") ? "active" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Dildos" })">Dildos</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(categoriaSeleccionada == "Vibradores" ? "active" : "")"
-                                       href="@($"{appRoot}?categoria=Vibradores")">Vibradores</a>
+                                    <a class="dropdown-item @(isActive("Vibradores") ? "active" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Vibradores" })">Vibradores</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(categoriaSeleccionada == "Torsos" ? "active" : "")"
-                                       href="@($"{appRoot}?categoria=Torsos")">Torsos</a>
+                                    <a class="dropdown-item @(isActive("Torsos") ? "active" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Torsos" })">Torsos</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(categoriaSeleccionada == "Anales" ? "active" : "")"
-                                       href="@($"{appRoot}?categoria=Anales")">Anales</a>
+                                    <a class="dropdown-item @(isActive("Anales") ? "active" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Anales" })">Anales</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item @(categoriaSeleccionada == "Sex Machines" ? "active" : "")"
-                                       href="@($"{appRoot}?categoria=Sex Machines")">Sex Machines</a>
+                                    <a class="dropdown-item @(isActive("Sex Machine") ? "active" : "")"
+                                       href="@Url.Action("Index", "Catalogo", new { categoria = "Sex Machine" })">Sex Machine</a>
                                 </li>
                             </ul>
                         </li>
 
+                        <!-- Otros filtros -->
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("LGBTIQ+") ? "active" : "")" href="@Url.Action("Index", "Catalogo", new { categoria = "LGBTIQ+" })">LGBTIQ+</a>
+                        </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("Bienestar") ? "active" : "")" href="@Url.Action("Index", "Catalogo", new { categoria = "Bienestar" })">Bienestar</a>
+                        </li>
 
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "LGBTIQ+" ? "active" : "")" href="@($"{appRoot}?categoria=LGBTIQ+")">LGBTIQ+</a></li>
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Bienestar" ? "active" : "")" href="@($"{appRoot}?categoria=Bienestar")">Bienestar</a></li>
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Bondage" ? "active" : "")" href="@($"{appRoot}?categoria=Bondage")">Bondage</a></li>
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Kits" ? "active" : "")" href="@($"{appRoot}?categoria=Kits")">Kits</a></li>
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Ofertas" ? "active" : "")" href="@($"{appRoot}?categoria=Ofertas")">Ofertas</a></li>
-                        <li class="nav-item"><a class="nav-link @(categoriaSeleccionada == "Lencería" ? "active" : "")" href="@($"{appRoot}?categoria=Lencería")">Lencería y disfraces</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("Bondage") ? "active" : "")" href="@Url.Action("Index", "Catalogo", new { categoria = "Bondage" })">Bondage</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("Kits") ? "active" : "")" href="@Url.Action("Index", "Catalogo", new { categoria = "Kits" })">Kits</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("Ofertas") ? "active" : "")" href="@Url.Action("Index", "Catalogo", new { categoria = "Ofertas" })">Ofertas</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link @(isActive("Lencería") ? "active" : "")" href="@Url.Action("Index", "Catalogo", new { categoria = "Lencería" })">Lencería y disfraces</a>
+                        </li>
                     </ul>
 
-                    <!-- Opciones generales -->
+                    <!-- Opciones generales (derecha, sin carrito) -->
                     <ul class="navbar-nav navbar-opciones flex-nowrap align-items-center ms-4">
                         <li class="nav-item me-2">
                             <a class="nav-link" href="@Url.Action("Productos", "Catalogo")">Catálogo</a>
@@ -202,15 +233,11 @@
     </main>
 
     <footer class="text-center py-4">
-        <div class="small">
-            © @DateTime.Now.Year SensualShop — Envío discreto | Atención confidencial
-        </div>
-        <div class="small mt-2">
-            <a href="https://wa.me/573248416899" class="link-light text-decoration-none">+57 324 841 6899</a>
-        </div>
+        <div class="small">© @DateTime.Now.Year SensualShop — Envío discreto | Atención confidencial</div>
+        <div class="small mt-2"><a href="https://wa.me/573248416899" class="link-light text-decoration-none">+57 324 841 6899</a></div>
     </footer>
 
-    <!-- Botón flotante WhatsApp -->
+    <!-- WhatsApp flotante -->
     <a href="https://api.whatsapp.com/send?phone=573248416899&text=Hola,%20Deseo%20una%20asesoria%20personalizada%20🔥😈" class="whatsapp-float" target="_blank" rel="noopener">
         <img src="@Url.Content("~/images/whatsapp.png")" alt="WhatsApp" />
         <span class="whatsapp-msg">💬 Para una asesoría personalizada, escríbenos</span>
