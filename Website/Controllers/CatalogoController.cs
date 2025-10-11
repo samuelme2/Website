@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TuProyecto.Models;
-using TuProyecto.Services; // Importa el servicio CSV
+using TuProyecto.Services;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
@@ -21,7 +21,7 @@ namespace TuProyecto.Controllers
                 { "Vibradores", new List<string> { "Vibradores" } },
                 { "Dildos", new List<string> { "Dildos" } },
                 { "Torsos", new List<string> { "Torsos" } },
-                { "Sex Machines", new List<string> { "Sex Machines" } }
+                { "Sex Machines", new List<string> { "Sex Machines", "Sex Machine" } } // añadí "Sex Machine" por equivalencia
             };
 
         public CatalogoController(IWebHostEnvironment env)
@@ -30,7 +30,6 @@ namespace TuProyecto.Controllers
 
             if (_productos == null)
             {
-                // Carga desde CSV (robusta)
                 _productos = CsvProductoService.LoadProductos(_env.WebRootPath) ?? new List<Producto>();
 
                 // Ejemplo: añadir catálogos PDF (opcional)
@@ -63,8 +62,9 @@ namespace TuProyecto.Controllers
         {
             var productosAll = _productos ?? new List<Producto>();
             var catRaw = categoria?.Trim();
+            var catNormalized = Normalize(catRaw);
 
-            // Sin filtro: devolver todo (o excluir Lencería si lo deseas)
+            // Sin filtro: devolver todo salvo Lencería (igual que antes)
             if (string.IsNullOrEmpty(catRaw))
             {
                 var categoriasPrincipales = productosAll
@@ -75,27 +75,63 @@ namespace TuProyecto.Controllers
 
                 ViewBag.Categorias = categoriasPrincipales;
                 ViewBag.CategoriaSeleccionada = null;
+
                 return View(productosAll
-                    .Where(p => !string.Equals(Normalize(p.Categoria), "Lencería", StringComparison.OrdinalIgnoreCase)
-                                && !SplitCategoryParts(p.Categoria).Any(cp => cp.Equals("Lencería", StringComparison.OrdinalIgnoreCase)))
+                    .Where(p => !SplitCategoryParts(p.Categoria)
+                        .Any(cp => cp.Equals("Lencería", StringComparison.OrdinalIgnoreCase)))
                     .ToList());
             }
 
-            var catNormalized = Normalize(catRaw);
-
-            // Preparar categorías principales a partir de las partes (maneja "Lovense|Accesorios")
+            // Lista general de categorías principales (para la UI)
             var categoriasPrincipalesList = productosAll
                 .SelectMany(p => SplitCategoryParts(p.Categoria))
                 .Where(x => !string.IsNullOrEmpty(x))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            // Si coincide con una categoría principal -> devolver por esa categoría
+            // --- CASO ESPECIAL: "Juguetes" debe devolver TODOS los productos relacionados a juguetes ---
+            if (!string.IsNullOrEmpty(catNormalized) && catNormalized.Equals("Juguetes", StringComparison.OrdinalIgnoreCase))
+            {
+                // Construimos la lista de subcategorías que consideraremos "pertenecientes a Juguetes"
+                var jugueteSubcats = SubfiltroEquivalencias
+                    .SelectMany(kv => kv.Value)
+                    .Select(x => Normalize(x))
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                // Añadimos además las claves del diccionario (por si se usaron esos nombres directamente)
+                jugueteSubcats.AddRange(SubfiltroEquivalencias.Keys.Select(k => Normalize(k)));
+                jugueteSubcats = jugueteSubcats
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                var juguetes = productosAll
+                    .Where(p =>
+                        // 1) productos que explícitamente tienen "Juguetes" en su campo Categoria (ej: "Juguetes|Sex Machine")
+                        SplitCategoryParts(p.Categoria).Any(part => string.Equals(Normalize(part), "Juguetes", StringComparison.OrdinalIgnoreCase))
+                        // 2) O productos cuya categoría (una de las partes) sea alguna subcategoría de juguete (ej: "Sex Machine", "Dildos")
+                        || SplitCategoryParts(p.Categoria).Any(part => jugueteSubcats.Any(s => string.Equals(Normalize(part), s, StringComparison.OrdinalIgnoreCase)))
+                        // 3) O productos cuyos SubFiltros contengan alguna de esas subcategorías/equivalencias
+                        || (p.SubFiltros != null && p.SubFiltros.Any(sf => jugueteSubcats.Any(s => string.Equals(Normalize(sf), s, StringComparison.OrdinalIgnoreCase))))
+                    )
+                    .Distinct()
+                    .ToList();
+
+                ViewBag.Categorias = categoriasPrincipalesList.Concat(new[] { "Lencería" })
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                ViewBag.CategoriaSeleccionada = "Juguetes";
+                return View(juguetes);
+            }
+
+            // --- Si coincide con una categoría principal normal (ej: Lovense, Lubricantes, etc.)
             if (categoriasPrincipalesList.Any(cp => cp.Equals(catNormalized, StringComparison.OrdinalIgnoreCase)))
             {
                 var byCategoria = productosAll
-                    .Where(p =>
-                        SplitCategoryParts(p.Categoria).Any(part => part.Equals(catNormalized, StringComparison.OrdinalIgnoreCase)))
+                    .Where(p => SplitCategoryParts(p.Categoria)
+                        .Any(part => part.Equals(catNormalized, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
 
                 ViewBag.Categorias = categoriasPrincipalesList;
@@ -103,19 +139,21 @@ namespace TuProyecto.Controllers
                 return View(byCategoria);
             }
 
-            // --- Si llegamos aquí, tratamos la petición como SUBFILTRO (ej: Dildos, Vibradores, etc.) ---
-            List<string> equivalentes;
-            if (!SubfiltroEquivalencias.TryGetValue(catRaw, out equivalentes) || equivalentes == null || equivalentes.Count == 0)
+            // --- Tratar como subfiltro (ej: Dildos, Vibradores, etc.)
+            if (!SubfiltroEquivalencias.TryGetValue(catRaw, out var equivalentes) || equivalentes == null)
             {
                 equivalentes = new List<string> { catRaw };
             }
 
-            // Filtrar productos que pertenecen a la categoría Juguetes y que tengan subfiltros equivalentes
+            // Expandir equivalentes normalizados
+            var equivalentesNormalized = equivalentes.Select(e => Normalize(e)).Where(e => !string.IsNullOrEmpty(e)).ToList();
+
             var resultadosSubfiltro = productosAll
                 .Where(p =>
+                    // debe pertenecer a la familia "Juguetes" (si tu data usa "Juguetes|X")
                     SplitCategoryParts(p.Categoria).Any(part => part.Equals("Juguetes", StringComparison.OrdinalIgnoreCase))
                     && p.SubFiltros != null
-                    && p.SubFiltros.Any(sf => equivalentes.Any(eq => string.Equals(Normalize(eq), Normalize(sf), StringComparison.OrdinalIgnoreCase)))
+                    && p.SubFiltros.Any(sf => equivalentesNormalized.Any(eq => string.Equals(Normalize(sf), eq, StringComparison.OrdinalIgnoreCase)))
                 )
                 .ToList();
 
@@ -126,7 +164,7 @@ namespace TuProyecto.Controllers
                 return View(resultadosSubfiltro);
             }
 
-            // --- Fallback: buscar coincidencias en SubFiltros O en partes de Categoria ---
+            // Fallback final: buscar coincidencias en partes de Categoria o SubFiltros
             var fallbackResults = productosAll
                 .Where(p =>
                     SplitCategoryParts(p.Categoria).Any(part => part.Equals(catNormalized, StringComparison.OrdinalIgnoreCase))

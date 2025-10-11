@@ -12,14 +12,17 @@ function cargarCarrito() {
 
 function parsePriceFromString(s) {
     if (!s) return 0;
+    // quitar todo menos números, punto y coma/coma
     let cleaned = String(s).replace(/[^\d.,-]/g, "");
     if (cleaned === "") return 0;
-
+    // casos: "12.345,67" -> remove dots, replace comma with dot
     if (cleaned.indexOf('.') > -1 && cleaned.indexOf(',') > -1) {
         cleaned = cleaned.replace(/\./g, '').replace(',', '.');
     } else if (cleaned.indexOf(',') > -1 && cleaned.indexOf('.') === -1) {
+        // "12345,67" -> "12345.67"
         cleaned = cleaned.replace(',', '.');
     } else {
+        // "12,345" or "12345" -> remove commas used as thousands
         cleaned = cleaned.replace(/,/g, '');
     }
     const n = parseFloat(cleaned);
@@ -44,7 +47,7 @@ function actualizarCarritoUI() {
     const itemsContainer = document.getElementById("cart-items");
     const totalElement = document.getElementById("cart-total");
 
-    if (!itemsContainer) return;
+    if (!itemsContainer) return; // offcanvas no está en la vista
 
     itemsContainer.innerHTML = "";
     let total = 0;
@@ -126,8 +129,12 @@ function obtenerInfoProductoDesdeBoton(btn) {
         if (imgEl) imagen = imgEl.src;
     }
 
+    // 👉 Generar imagen automáticamente si no se encontró en la tarjeta
     if (!imagen && nombre) {
-        let nombreLimpio = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '').trim();
+        let nombreLimpio = nombre
+            .toLowerCase()                 // todo a minúscula
+            .replace(/[^a-z0-9]+/g, '')    // eliminar espacios y símbolos
+            .trim();
         imagen = `/images/${nombreLimpio}.jpg`;
     }
 
@@ -140,12 +147,9 @@ function obtenerInfoProductoDesdeBoton(btn) {
         precio,
         imagen: imagen || '/images/no-image.png'
     };
-}
-
-// --- agregar al carrito ---
-function agregarAlCarritoDesdeBoton(btn) {
+} function agregarAlCarritoDesdeBoton(btn) {
     const info = obtenerInfoProductoDesdeBoton(btn);
-
+    // identificar por id si existe, sino por nombre
     let existente = null;
     if (info.id) {
         existente = carrito.find(it => it.id && String(it.id) === String(info.id));
@@ -157,33 +161,33 @@ function agregarAlCarritoDesdeBoton(btn) {
     if (existente) {
         existente.cantidad++;
     } else {
-        carrito.push({
+        const item = {
             id: info.id || null,
             nombre: info.nombre,
             precio: Number(info.precio) || 0,
             cantidad: 1,
             imagen: info.imagen
-        });
+        };
+        carrito.push(item);
     }
 
     // animaciones
-    mostrarMensajeAgregado(btn);
+    animarFlyToCart(btn);
     animarIconoCarrito();
 
     actualizarCarritoUI();
 }
 
-// --- sumar/restar/eliminar ---
 function sumarUnidad(index) {
     index = Number(index);
-    if (!carrito[index]) return;
+    if (Number.isNaN(index) || !carrito[index]) return;
     carrito[index].cantidad++;
     actualizarCarritoUI();
 }
 
 function restarUnidad(index) {
     index = Number(index);
-    if (!carrito[index]) return;
+    if (Number.isNaN(index) || !carrito[index]) return;
     if (carrito[index].cantidad > 1) carrito[index].cantidad--;
     else carrito.splice(index, 1);
     actualizarCarritoUI();
@@ -191,14 +195,13 @@ function restarUnidad(index) {
 
 function eliminarProducto(index) {
     index = Number(index);
-    if (!carrito[index]) return;
+    if (Number.isNaN(index) || !carrito[index]) return;
     carrito.splice(index, 1);
     actualizarCarritoUI();
 }
 
-// --- WhatsApp ---
 function enviarWhatsApp() {
-    if (!carrito.length) {
+    if (!carrito || carrito.length === 0) {
         alert("Tu carrito está vacío.");
         return;
     }
@@ -213,51 +216,63 @@ function enviarWhatsApp() {
     window.open(`https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`, '_blank');
 }
 
-// --- animaciones ---
+// --- animación: icon + fly image ---
 function animarIconoCarrito() {
     ensureAnimateCssLoaded();
-    const icon = document.querySelector('.bi-cart3') || document.querySelector('#cart-count');
+    const icon = document.querySelector('.bi-cart3') || document.querySelector('#cart-count') || document.querySelector('[data-cart-icon]');
     if (!icon) return;
     icon.classList.remove('animate__animated', 'animate__tada');
+    // trigger reflow to restart animation
     void icon.offsetWidth;
     icon.classList.add('animate__animated', 'animate__tada');
-    setTimeout(() => icon.classList.remove('animate__animated', 'animate__tada'), 900);
+    setTimeout(() => {
+        icon.classList.remove('animate__animated', 'animate__tada');
+    }, 900);
 }
 
-// 👉 NUEVO: mensaje “+1 agregado”
-function mostrarMensajeAgregado(btn) {
-    const msg = document.createElement('div');
-    msg.textContent = "+1";
-    msg.style.position = "absolute";
-    msg.style.background = "rgba(0,0,0,0.8)";
-    msg.style.color = "#fff";
-    msg.style.padding = "2px 6px";
-    msg.style.borderRadius = "4px";
-    msg.style.fontSize = "0.8rem";
-    msg.style.top = "-20px";
-    msg.style.right = "0";
-    msg.style.opacity = "1";
-    msg.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
-    msg.style.zIndex = "10000";
+function animarFlyToCart(btn) {
+    const card = btn.closest('.card') || btn.closest('.producto-card') || btn.closest('.col') || document.body;
+    const imgEl = card ? card.querySelector('img') : null;
+    const cartIcon = document.querySelector('.bi-cart3') || document.querySelector('#cart-count') || document.querySelector('[data-cart-icon]');
+    if (!imgEl || !cartIcon) return;
 
-    const container = btn.parentElement || btn;
-    container.style.position = "relative";
-    container.appendChild(msg);
+    const src = imgEl.src;
+    const imgRect = imgEl.getBoundingClientRect();
+    const cartRect = cartIcon.getBoundingClientRect();
 
+    const clone = imgEl.cloneNode(true);
+    clone.style.position = 'fixed';
+    clone.style.left = imgRect.left + window.scrollX + 'px';
+    clone.style.top = imgRect.top + window.scrollY + 'px';
+    clone.style.width = imgRect.width + 'px';
+    clone.style.height = imgRect.height + 'px';
+    clone.style.objectFit = 'cover';
+    clone.style.borderRadius = getComputedStyle(imgEl).borderRadius || '8px';
+    clone.style.transition = 'all 650ms ease-in-out';
+    clone.style.zIndex = 9999;
+    document.body.appendChild(clone);
+
+    // fuerza layout
     requestAnimationFrame(() => {
-        msg.style.opacity = "0";
-        msg.style.transform = "translateY(-10px)";
+        clone.style.left = cartRect.left + window.scrollX + 'px';
+        clone.style.top = cartRect.top + window.scrollY + 'px';
+        clone.style.width = Math.max(16, cartRect.width) + 'px';
+        clone.style.height = Math.max(16, cartRect.height) + 'px';
+        clone.style.opacity = '0.2';
+        clone.style.transform = 'scale(0.6)';
     });
 
-    setTimeout(() => msg.remove(), 900);
+    // cleanup
+    setTimeout(() => clone.remove(), 700);
 }
 
-// --- inicialización ---
+// --- inicialización y delegación ---
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ carrito.js (+1 agregado) cargado");
+    console.log("✅ carrito.js (auto-img) cargado");
     carrito = cargarCarrito();
     actualizarCarritoUI();
 
+    // Delegación global de clicks
     document.addEventListener('click', function (e) {
         const addBtn = e.target.closest && e.target.closest('.add-to-cart');
         if (addBtn) {
@@ -288,8 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // conectado al botón final (si existe)
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) checkoutBtn.addEventListener('click', enviarWhatsApp);
 
+    // Exponer global por si usas onclick inline
     window.enviarWhatsApp = enviarWhatsApp;
 });
